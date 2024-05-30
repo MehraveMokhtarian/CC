@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Key-Value Storage</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      width: 300px;
+      padding: 10px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+    th {
+      background-color: #f2f2f2;
+    }
+    #add-form {
+      margin-top: 10px;
+    }
+    #add-form input {
+      margin-right: 5px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Key-Value Storage</h1>
+  <table id="key-value-table">
+    <thead>
+      <tr>
+        <th>Key</th>
+        <th>Value</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Rows will be added dynamically here -->
+    </tbody>
+  </table>
+  <form id="add-form">
+    <input type="text" id="key" placeholder="Key" required>
+    <input type="text" id="value" placeholder="Value" required>
+    <button type="submit">Add</button>
+  </form>
+  <script src="popup.js"></script>
+</body>
+</html>
