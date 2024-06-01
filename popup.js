@@ -1,8 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
   const tableBody = document.querySelector('#key-value-table tbody');
-  const addForm = document.getElementById('add-form');
-  const keyInput = document.getElementById('key');
-  const valueInput = document.getElementById('value');
+  const keyInput = document.getElementById('new-key');
+  const valueInput = document.getElementById('new-value');
   let currentUrl = '';
 
   function saveKeyValue(key, value) {
@@ -27,26 +26,35 @@ document.addEventListener('DOMContentLoaded', () => {
         row.innerHTML = `
           <td>${key}</td>
           <td>${value}</td>
-          <td><button data-key="${key}">Delete</button></td>
+          <td><span class="delete-button" data-key="${key}">Delete</span></td>
         `;
         tableBody.appendChild(row);
       }
+      // Add the input row at the end
+      const inputRow = document.createElement('tr');
+      inputRow.className = 'input-row';
+      inputRow.innerHTML = `
+        <td><input type="text" id="new-key" placeholder="Key" required></td>
+        <td><input type="text" id="new-value" placeholder="Value" required></td>
+        <td></td>
+      `;
+      tableBody.appendChild(inputRow);
     });
   }
 
-  addForm.addEventListener('submit', (event) => {
-    event.preventDefault();
+  function addRow() {
     const key = keyInput.value.trim();
     const value = valueInput.value.trim();
     if (key && value) {
       saveKeyValue(key, value);
       keyInput.value = '';
       valueInput.value = '';
+      keyInput.focus();
     }
-  });
+  }
 
   tableBody.addEventListener('click', (event) => {
-    if (event.target.tagName === 'BUTTON') {
+    if (event.target.classList.contains('delete-button')) {
       const key = event.target.getAttribute('data-key');
       chrome.storage.local.get([currentUrl], (result) => {
         const data = result[currentUrl] || {};
@@ -56,6 +64,14 @@ document.addEventListener('DOMContentLoaded', () => {
           displayTable();
         });
       });
+    } else if (event.target.closest('.input-row')) {
+      addRow();
+    }
+  });
+
+  tableBody.addEventListener('keypress', (event) => {
+    if (event.target.closest('.input-row') && event.key === 'Enter') {
+      addRow();
     }
   });
 

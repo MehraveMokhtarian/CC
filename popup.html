@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>cc</title>
+  <title>Key-Value Table</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -20,11 +20,22 @@
     th {
       background-color: #f2f2f2;
     }
-    #add-form {
-      margin-top: 10px;
+    .input-row td {
+      background-color: #e6f7ff;
+      cursor: pointer;
     }
-    #add-form input {
-      margin-right: 5px;
+    .input-row td input {
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .delete-button {
+      display: none;
+      cursor: pointer;
+      color: red;
+      margin-left: 10px;
+    }
+    tr:hover .delete-button {
+      display: inline;
     }
   </style>
 </head>
@@ -34,18 +45,18 @@
       <tr>
         <th>Key</th>
         <th>Value</th>
-        <th>Action</th>
+        <th></th>
       </tr>
     </thead>
     <tbody>
       <!-- Rows will be added dynamically here -->
+      <tr class="input-row">
+        <td><input type="text" id="new-key" placeholder="Key" required></td>
+        <td><input type="text" id="new-value" placeholder="Value" required></td>
+        <td></td>
+      </tr>
     </tbody>
   </table>
-  <form id="add-form">
-    <input type="text" id="key" placeholder="Key" required>
-    <input type="text" id="value" placeholder="Value" required>
-    <button type="submit">Add</button>
-  </form>
   <script src="popup.js"></script>
 </body>
 </html>
