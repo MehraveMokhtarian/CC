@@ -3,13 +3,14 @@ document.addEventListener('DOMContentLoaded', () => {
   const addForm = document.getElementById('add-form');
   const keyInput = document.getElementById('key');
   const valueInput = document.getElementById('value');
+  let currentUrl = '';
 
   function saveKeyValue(key, value) {
-    const url = new URL(window.location.href).hostname;
-    chrome.storage.local.get([url], (result) => {
-      const data = result[url] || {};
+    if (!currentUrl) return;
+    chrome.storage.local.get([currentUrl], (result) => {
+      const data = result[currentUrl] || {};
       data[key] = value;
-      chrome.storage.local.set({ [url]: data }, () => {
+      chrome.storage.local.set({ [currentUrl]: data }, () => {
         console.log('Data saved');
         displayTable();
       });
@@ -17,9 +18,9 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function displayTable() {
-    const url = new URL(window.location.href).hostname;
-    chrome.storage.local.get([url], (result) => {
-      const data = result[url] || {};
+    if (!currentUrl) return;
+    chrome.storage.local.get([currentUrl], (result) => {
+      const data = result[currentUrl] || {};
       tableBody.innerHTML = '';
       for (const [key, value] of Object.entries(data)) {
         const row = document.createElement('tr');
@@ -47,11 +48,10 @@ document.addEventListener('DOMContentLoaded', () => {
   tableBody.addEventListener('click', (event) => {
     if (event.target.tagName === 'BUTTON') {
       const key = event.target.getAttribute('data-key');
-      const url = new URL(window.location.href).hostname;
-      chrome.storage.local.get([url], (result) => {
-        const data = result[url] || {};
+      chrome.storage.local.get([currentUrl], (result) => {
+        const data = result[currentUrl] || {};
         delete data[key];
-        chrome.storage.local.set({ [url]: data }, () => {
+        chrome.storage.local.set({ [currentUrl]: data }, () => {
           console.log('Data deleted');
           displayTable();
         });
@@ -59,5 +59,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  displayTable();
+  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+    currentUrl = new URL(tabs[0].url).hostname;
+    displayTable();
+  });
 });
