@@ -1,8 +1,25 @@
+document.getElementById('key').addEventListener('focus', function() {
+  document.getElementById('add-form').classList.add('focus');
+});
+
+document.getElementById('key').addEventListener('blur', function() {
+  document.getElementById('add-form').classList.remove('focus');
+});
+
+document.getElementById('value').addEventListener('focus', function() {
+  document.getElementById('add-form').classList.add('focus');
+});
+
+document.getElementById('value').addEventListener('blur', function() {
+  document.getElementById('add-form').classList.remove('focus');
+});
+
+
 document.addEventListener('DOMContentLoaded', () => {
   const tableBody = document.querySelector('#key-value-table tbody');
-  const keyInput = document.getElementById('new-key');
-  const valueInput = document.getElementById('new-value');
-  let currentUrl = '';
+  const addForm = document.getElementById('add-form');
+  const keyInput = document.getElementById('key');
+  const valueInput = document.getElementById('value');
 
   function saveKeyValue(key, value) {
     if (!currentUrl) return;
@@ -26,52 +43,39 @@ document.addEventListener('DOMContentLoaded', () => {
         row.innerHTML = `
           <td>${key}</td>
           <td>${value}</td>
-          <td><span class="delete-button" data-key="${key}">Delete</span></td>
+          <td><button class="delete-btn" data-key="${key}"></button></td>
         `;
+        row.querySelector('.delete-btn').addEventListener('click', () => {
+          deleteRow(key);
+        });
         tableBody.appendChild(row);
       }
-      // Add the input row at the end
-      const inputRow = document.createElement('tr');
-      inputRow.className = 'input-row';
-      inputRow.innerHTML = `
-        <td><input type="text" id="new-key" placeholder="Key" required></td>
-        <td><input type="text" id="new-value" placeholder="Value" required></td>
-        <td></td>
-      `;
-      tableBody.appendChild(inputRow);
     });
   }
 
-  function addRow() {
+  addForm.addEventListener('submit', (event) => {
+    event.preventDefault();
     const key = keyInput.value.trim();
     const value = valueInput.value.trim();
     if (key && value) {
       saveKeyValue(key, value);
       keyInput.value = '';
       valueInput.value = '';
-      keyInput.focus();
     }
-  }
+  });
 
   tableBody.addEventListener('click', (event) => {
-    if (event.target.classList.contains('delete-button')) {
+    if (event.target.classList.contains('delete-btn')) {
       const key = event.target.getAttribute('data-key');
+      const url = window.location.href;
       chrome.storage.local.get([currentUrl], (result) => {
         const data = result[currentUrl] || {};
         delete data[key];
         chrome.storage.local.set({ [currentUrl]: data }, () => {
           console.log('Data deleted');
-          displayTable();
+          displayTable(currentUrl);
         });
       });
-    } else if (event.target.closest('.input-row')) {
-      addRow();
-    }
-  });
-
-  tableBody.addEventListener('keypress', (event) => {
-    if (event.target.closest('.input-row') && event.key === 'Enter') {
-      addRow();
     }
   });
 
